@@ -1,111 +1,75 @@
-# DEZSYS_GK81_WAREHOUSE_ORM
+# DEZSYS GK81 Warehouse ORM
 
-Join GitHub Repo: https://github.com/ThomasMicheler/DEZSYS_GK862_DATAWAREHOUSE_ORM.git
+## GKü
 
-This lesson introduces the data accessing model in Spring and the basics of Object Relational Mapping (ORM).
+### Questions
+- What is ORM and how is JPA used?
+  - ORM stands for Object-Relational Mapping and maps table based databases into Objects in many programming languages and the other way around. THe benefit is one doesn#t have to manually write SQL-statements.
+  - JPA stands for Java Persistence API is a specification for Java. I used Hibernate which is the most common.
+  - It is used with the Annotations that mark objects, Attributes or Methods for the interpreter. Like @Entity for persistence objects
+- What is application.properties used for and where must it be stored?
+  - There are configurations for the Spring Boot application in my project I use it for specifying my database.
+  - It has to be stored in src/main/resources
+- Which Annotations are frequently used for Entity types? Which key points must be observed?
+  - @Entity
+    - Marks a class that gets mapped to the database table.
+  - @Id
+    - Marks the primary key of the entity
+  - GeneratedValue
+    - specifies the strategy for generating primary key
+  - @Column
+    - Specifies the column name of an attribute
+  - @Table
+    - Specifies the name of the table for the entity
+  - @ManyToOne, @OneToMany, @OneToOne, @ManyToMany
+    - Define relationships between entities.
+  - @JoinColumn
+    - Specifies the column that is used to join the related entities.
+  - @Transient
+    - Marks a field that should not be persisted in the database.
+- What methods do you need for CRUD operations?
+  - Create I can use save(entity) to add a entity to the database
+  - Read I can either use findById(id) to get a single row or findAll() for every row in the table.
+  - Update again save(entity) when the entity already exists, it updates it instead.
+  - Delete here again I can either use deleteById(id) or delete(entity) or even deleteAll()
 
-## Introduction
+### Documentation
 
-This exercise is intended to demonstrate the interaction between a programming language (Java) and a persistance layer (MySQL, PostgreSQL).
+**First Step**
 
-First you should follow the Spring tutorial ["Accessing data with MySQL"](https://spring.io/guides/gs/accessing-data-mysql) and document all important steps in your protocol. Don't forget to make notes about all problems occured during the setup. Afterwards you should extend the data model of the example and adapt it for a Data Warehouse application (data structure see below). One relation between the entities Datawarehouse and Products is required in this example. Please read the documentation how you implementation entity relations using the ORM model.
+Pulling the Project from the teacher https://github.com/ThomasMicheler/DEZSYS_GK862_DATAWAREHOUSE_ORM.git
 
-Document all individual implementation steps and any problems that arise in a log (Markdown).  
-Create a GITHUB repository for this project and add the link to it in the comments.
+**Second Step**
 
-## Requirements
+```docker compose up``` to a MySQL ``compose.yaml`` file that I copied form the internet.
 
-*   MySQL DMS
-     *  Local MySQL Service   
-     *  MySQL Docker Container
-*   Gradle 8 or higher  
-*   Java SDK 18 or higher  
-     
-## Data Structure - Data Warehouse
+**Third Step**
+
+Updating the ``aplication.properties`` for the Username and Password for my Docker-Container
+
+**Fourth Step (unnecessary)**
+
+Creating a Service Class for the beauty of the Model View Controller
+
+This code snippet is the most important and equals to ``SELECT * FROM user;``
 ```
-<warehouseData>
-    <warehouseID>001</warehouseID>
-    <warehouseName>Linz Bahnhof</warehouseName>
-    <warehouseAddress>Bahnhofsstrasse 27/9</warehouseAddress>
-    <warehousePostalCode>Linz</warehousePostalCode>
-    <warehouseCity>Linz</warehouseCity>
-    <warehouseCountry>Austria</warehouseCountry>
-    <timestamp>2021-09-12 08:52:39.077</timestamp>
-    <productData>
-         <product>
-             <productID>00-443175</productID>
-             <productName>Bio Orangensaft Sonne</productName>
-             <productCategory>Getraenk</productCategory>
-             <productQuantity>2500</productQuantity>
-             <productUnit>Packung 1L</productUnit>
-         </product>
-         <product>
-             <productID>00-871895</productID>
-             <productName>Bio Apfelsaft Gold</productName>
-             <productCategory>Getraenk</productCategory>
-             <productQuantity>3420</productQuantity>
-             <productUnit>Packung 1L</productUnit>
-         </product>
-    </productData>
-</warehouseData>
+public Iterable<User> getAllUsers() {
+    return userRepository.findAll();
+}
 ```
-## Important Commands. 
 
-*   Use gradle to build the application  
-     `gradle clean`   
-     `gradle bootRun`   
+### Additional Information
 
-*   Connect to MySQL Shell  
-     `mysqlsh <username>@localhost`   
+The curl command in windows which adds a User over POST to my Webserver
 
-*   MySQL Shell Commands  
-     `show databases; // list all local databases `   
-     `use example;  // switch to a local database "example" `   
-     `show tables;           // list all of current database   `   
-     `create table example;   // create a SQL table with the name "example"   ` 
+``curl.exe -X POST http://localhost:8082/demo/add -d "name=John Doe" -d "email=john.doe@example.com"``
 
-## Assessment
+## Quellen
 
-- Group size: 1 Person.  
-- Result by protocol and delivery meeting (in English). 
-- Requirements **überwiegend erfüllt**. 
-    * Answer the questions below about the ORM framework.  
-    * Use the tutorial ["Accessing data with MySQL"](https://spring.io/guides/gs/accessing-data-mysql) 
-    * Implement the MySQL example with the User database 
-    * Document each single development step in your protocol and describe the most important code snippets in few sentences. Furthermore, the output of the application and any problems that occur should be documented in submission document.
-*  Requirements **zur Gänze erfüllt**
-   * Customize the data model for the Data Warehouse application (min. 2 entities with 1 relation).  
-   * Insert following records: 2 Data Warehouse records, 10 Product records.  
-   * Document which parts of the program need to be adapted
-*  Extended Requirements **überwiegend erfüllt**
-   *   Find out which methods are available for the CrudRepository to collect data   
-        https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/CrudRepository.html.    
-   *  Extend the Data Warehouse repository with following functionalities:   
-       * Collect all data of one data warehouse specified by datawarehouseID.  
-       * Collect a single product of a data warehouse specified by datawarehouseID and productID.  
-       * Update a data warehouse using datawarehouseID. 
-   * Document the parts of your project which have to be extend
-*  Extended Requirements **zur Gänze erfüllt**.  
-   *  Replace the MySQL database management system with a PostgreSQL database management system.  
-   *  Document which configuration files need to be adapted
+ORM: https://docs.spring.io/spring-framework/reference/data-access/orm/introduction.html
 
+Annotations and JPA: https://docs.oracle.com/javaee/7/tutorial/persistence-intro001.htm
 
-## Questions
+application.properties: https://docs.spring.io/spring-boot/appendix/application-properties/index.html
 
-* What is ORM and how is JPA used?  
-* What is the application.properties used for and where must it be stored?  
-* Which annotations are frequently used for entity types? Which key points must be observed?   
-* What methods do you need for CRUD operations?  
-
-## Links & Further Resources
-
-* Object Relational Mapping (ORM) Data Access:   
-   https://docs.spring.io/spring-framework/reference/data-access/orm.html
-* Accessing data with MySQL.  
-   https://spring.io/guides/gs/accessing-data-mysql
-* Difference between Hibernate and Spring Data:  
-   https://dzone.com/articles/what-is-the-difference-between-hibernate-and-sprin-1
-* Introduction Hibernate:   
-   https://vicksheet.medium.com/getting-started-with-hibernate-an-introduction-to-the-orm-framework-for-java-applications-fd97af01b7a6
-* Video:   
-   https://www.youtube.com/watch?v=NC-1j1grMPI&ab_channel=ManningPublications
+CRUD: https://www.baeldung.com/spring-data-repositories
